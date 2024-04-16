@@ -28,13 +28,46 @@ IO Chatroom is a simple real-time chat application using sockets in Python. It f
 
 1. Navigate to the directory containing `server.py`.
 2. Run the server script:
-   ```bash
-   python server.py
+
+` ```bash
+   python server.py`
 
 ### Running the Client
 1. Navigate to the directory containing client.py.
 2. Run the client script:
+
 `python client.py`
+
+## Using Ngrok to Connect Clients Remotely
+
+To connect clients to the server over the internet, you can use Ngrok to expose your local server publicly.
+
+1. Download and Setup Ngrok:
+
+- Go to Ngrok and sign up if you haven't already.
+- Follow the setup instructions to download and install Ngrok on your machine.
+
+2. Start the Server:
+
+- Ensure your server is running as described above.
+
+3. Start Ngrok:
+
+- Open a terminal and run Ngrok to expose your server port (default is 12345) to the internet:
+
+`ngrok tcp 12345`
+
+4. Configure the Client:
+
+- Note the forwarding address provided by Ngrok (e.g., 0.tcp.ngrok.io:12345).
+- Modify the client.py script to connect to the provided Ngrok address:
+
+`client.connect(("0.tcp.ngrok.io", 12345))`
+
+5. Run the Client:
+
+- Run your client as usual, and it should now connect to your server via Ngrok.
+
 
 ## Usage
 
