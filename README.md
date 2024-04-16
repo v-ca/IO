@@ -2,8 +2,8 @@
 
 ## THIS REPO IS A WORK-IN-PROGRESS AND INITIAL COMMIT WAS CREATED TO ADD SERVER AND CLIENT FILES.
 ### NEXT STEPS:
-#### Create a GUI for clients
-#### Institute NLP and social network graphs for further analysis
+- Create a GUI for clients
+- Institute NLP and social network graphs for further analysis
 
 ## Overview
 
