@@ -1,5 +1,10 @@
 # IO Chatroom
 
+## THIS REPO IS A WORK-IN-PROGRESS AND INITIAL STEPS HAVE BEEN TAKEM.
+### NEXT STEPS:
+#### Create a GUI for clients
+#### Institute NLP and social network graphs for further analysis
+
 ## Overview
 
 IO Chatroom is a simple real-time chat application using sockets in Python. It features a server and a client script that enable multiple clients to connect and communicate via a centralized server. The application supports basic chat features, including administrative commands to kick or ban users, and the ability to shut down the server gracefully from an admin client.
