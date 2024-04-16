@@ -13,8 +13,8 @@ IO Chatroom is a simple real-time chat application using sockets in Python. It f
 
 ## Repository Structure
 
-- `server.py`: Contains all the server-side logic.
-- `client.py`: Contains all the client-side logic.
+- `tcp-server.py`: Contains all the server-side logic.
+- `tcp-client.py`: Contains all the client-side logic.
 - `bans.txt`: Stores a list of banned user names.
 
 ## Setup Instructions
@@ -26,17 +26,16 @@ IO Chatroom is a simple real-time chat application using sockets in Python. It f
 
 ### Running the Server
 
-1. Navigate to the directory containing `server.py`.
+1. Navigate to the directory containing `tcp-server.py`.
 2. Run the server script:
 
-` ```bash
-   python server.py`
+`python tcp-server.py`
 
 ### Running the Client
 1. Navigate to the directory containing client.py.
 2. Run the client script:
 
-`python client.py`
+`python tcp-client.py`
 
 ## Using Ngrok to Connect Clients Remotely
 
