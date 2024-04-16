@@ -1,6 +1,6 @@
 # IO Chatroom
 
-## THIS REPO IS A WORK-IN-PROGRESS AND INITIAL STEPS HAVE BEEN TAKEM.
+## THIS REPO IS A WORK-IN-PROGRESS AND INITIAL COMMIT WAS CREATED TO ADD SERVER AND CLIENT FILES.
 ### NEXT STEPS:
 #### Create a GUI for clients
 #### Institute NLP and social network graphs for further analysis
