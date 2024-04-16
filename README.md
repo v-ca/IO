@@ -42,7 +42,7 @@ IO Chatroom is a simple real-time chat application using sockets in Python. It f
 
 To connect clients to the server over the internet, you can use Ngrok to expose your local server publicly.
 
-1. Download and Setup Ngrok:
+1. Download and Setup [Ngrok](https://ngrok.com/):
 
 - Go to Ngrok and sign up if you haven't already.
 - Follow the setup instructions to download and install Ngrok on your machine.
