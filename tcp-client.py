@@ -59,7 +59,9 @@ if name == "admin":
     password = input("Enter your password: ")
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(("0.tcp.ngrok.io", 10958))
+# client.connect(("0.tcp.ngrok.io", 10958))
+client.connect(("localhost", 12345))
+
 
 stop_thread = False
 
