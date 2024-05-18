@@ -1,5 +1,10 @@
 import socket
 import threading
+from cryptography.fernet import Fernet
+
+# Generate a key for encryption
+key = Fernet.generate_key()
+cipher = Fernet(key)
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(('0.0.0.0', 9999))
@@ -11,7 +16,8 @@ def broadcast(message, sender_socket):
     for client_socket, name in clients:
         if client_socket != sender_socket:
             try:
-                client_socket.send(message.encode('utf-8'))
+                encrypted_message = cipher.encrypt(message.encode('utf-8'))
+                client_socket.send(encrypted_message)
             except Exception as e:
                 print(f"Error broadcasting message: {e}")
                 client_socket.close()
@@ -28,8 +34,9 @@ def handle_client(client_socket):
 
         while True:
             try:
-                message = client_socket.recv(1024).decode('utf-8')
-                if message:
+                encrypted_message = client_socket.recv(1024)
+                if encrypted_message:
+                    message = cipher.decrypt(encrypted_message).decode('utf-8')
                     formatted_message = f"{name}: {message}"
                     broadcast(formatted_message, client_socket)
                 else:
@@ -46,6 +53,8 @@ def handle_client(client_socket):
         if (client_socket, name) in clients:
             clients.remove((client_socket, name))
 
+print("Server has started")
+print(f"Encryption key: {key.decode()}")
 while True:
     try:
         client_socket, addr = server.accept()
