@@ -67,5 +67,9 @@ receive_thread = threading.Thread(target=receive_messages, args=(client, languag
 receive_thread.start()
 
 while True:
-    message = input()
-    client.send(message.encode('utf-8'))
+    try:
+        message = input()
+        client.send(message.encode('utf-8'))
+    except BrokenPipeError:
+        print("Connection to server lost. Exiting program.")
+        break
