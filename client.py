@@ -1,11 +1,5 @@
 import subprocess
 import sys
-import socket
-import threading
-from googletrans import Translator
-from cryptography.fernet import Fernet
-import base64
-import binascii
 
 
 def install_and_import(package, import_name=None):
