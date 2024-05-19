@@ -95,8 +95,6 @@ def display_languages(languages):
             print(f"{code}: {language}", end="\t\t\t")
         elif len(language) <= 3:
             print(f"{code}: {language}", end="\t\t\t\t\t")
-        # elif len(language) < 5:
-        #     print(f"{code}: {language}", end="\t\t\t\t")
         else:
             print(f"{code}: {language}", end="\t\t\t\t")
         if i % 4 == 0:
