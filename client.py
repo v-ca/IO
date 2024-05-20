@@ -1,13 +1,14 @@
-import re
+########################################
+########################################
+##                                    ##
+##    Package Installation Section    ##
+##                                    ##
+########################################
+########################################
+
+
 import sys
-import socket
-import threading
 import subprocess
-
-from googletrans import Translator
-from cryptography.fernet import Fernet
-
-from typing import Optional, Dict
 
 
 def install_and_import(package: str, import_name: Optional[str] = None) -> None:
@@ -47,6 +48,25 @@ def check_and_install_packages() -> None:
 
 check_and_install_packages()
 
+import re
+import socket
+import threading
+
+from googletrans import Translator
+from cryptography.fernet import Fernet
+
+from typing import Optional, Dict
+
+
+####################################
+####################################
+##                                ##
+##    Message Handling Section    ##
+##                                ##
+####################################
+####################################
+
+
 translator = Translator()
 
 
@@ -71,6 +91,15 @@ def receive_messages(client_socket: socket.socket, cipher: Fernet, language: str
         except Exception as e:
             print(f"Error receiving message: {e}")
             break
+
+
+#####################################
+#####################################
+##                                 ##
+##    Utility Functions Section    ##
+##                                 ##
+#####################################
+#####################################
 
 
 def display_languages(languages: Dict[str, str]) -> None:
@@ -113,7 +142,15 @@ def is_valid_ip(address: str) -> bool:
     return bool(ip_pattern.match(address) or ngrok_pattern.match(address))
 
 
-# ASCII Art Welcome Message
+##################################
+##################################
+##                              ##
+##    Main Execution Section    ##
+##                              ##
+##################################
+##################################
+
+
 welcome_message = """
     ____    _____      ____ _           _   
    |_  _|  /  _  \    / ___| |__   __ _| |_ 
@@ -125,7 +162,6 @@ welcome_message = """
 print(welcome_message)
 print("Welcome to an encrypted, auto-translation chatroom\nthat filters negative messages")
 
-# Ask for the server address, port number, name, and language
 while True:
     server_address = input("\nEnter server address (IP or ngrok address): ")
     if server_address.strip() and is_valid_ip(server_address):
@@ -144,7 +180,7 @@ while True:
         break
     print("Please enter a valid name.")
 
-# Available languages dictionary
+# Available languages for translation from Google Translate
 languages = {
     'af': 'Afrikaans', 'sq': 'Albanian', 'am': 'Amharic', 'ar': 'Arabic', 'hy': 'Armenian', 'az': 'Azerbaijani',
     'eu': 'Basque', 'be': 'Belarusian', 'bn': 'Bengali', 'bs': 'Bosnian', 'bg': 'Bulgarian', 'ca': 'Catalan',
@@ -170,7 +206,6 @@ display_languages(languages)
 
 language = input("\nEnter your preferred language code (e.g., 'en' for English - default language if none chosen): ")
 
-# Set default language to English if no language is chosen
 if not language:
     language = 'en'
 
