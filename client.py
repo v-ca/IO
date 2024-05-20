@@ -7,8 +7,6 @@ import subprocess
 from googletrans import Translator
 from cryptography.fernet import Fernet
 
-import base64
-import binascii
 from typing import Optional, Dict
 
 
@@ -176,27 +174,14 @@ language = input("\nEnter your preferred language code (e.g., 'en' for English -
 if not language:
     language = 'en'
 
-max_attempts = 5
-attempts = 0
-
-while attempts < max_attempts:
+while True:
     key = input("\nEnter the encryption key provided by the server: ")
     if key.strip():
-        try:
-            missing_padding = len(key) % 4
-            if missing_padding:
-                key += '=' * (4 - missing_padding)
-                key = base64.urlsafe_b64decode(key.encode())
-                cipher = Fernet(key)
-                break
-        except (binascii.Error, ValueError) as e:
-            attempts += 1
-            print(f"Invalid encryption key ({attempts}/{max_attempts} attempts): {e}")
-            if attempts == max_attempts:
-                print("Max attempts reached. Please check the encryption key provided by the server.")
-                sys.exit(1)
-        else:
-            print("Please enter a valid encryption key.")
+        key = key.encode()
+        break
+    print("Please enter a valid encryption key.")
+
+cipher = Fernet(key)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((server_address, int(port)))
