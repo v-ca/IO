@@ -7,8 +7,16 @@
 ########################################
 
 
+import re
 import sys
+import socket
+import threading
 import subprocess
+
+from googletrans import Translator
+from cryptography.fernet import Fernet
+
+from typing import Optional, Dict
 
 
 def install_and_import(package: str, import_name: Optional[str] = None) -> None:
@@ -47,15 +55,6 @@ def check_and_install_packages() -> None:
 
 
 check_and_install_packages()
-
-import re
-import socket
-import threading
-
-from googletrans import Translator
-from cryptography.fernet import Fernet
-
-from typing import Optional, Dict
 
 
 ####################################

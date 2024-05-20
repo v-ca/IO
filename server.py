@@ -7,42 +7,50 @@
 ########################################
 
 
+import os
 import sys
 import subprocess
-
-
-def install(package: str) -> None:
-    """
-    Installs a specified Python package using pip.
-
-    Args:
-    package (str): The name of the package to install.
-
-    Returns:
-    None
-    """
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-
-
-# List of required packages
-required_packages = [
-    "torch", "torchvision", "transformers", "numpy", "cryptography"
-]
-
-# Check and install missing packages
-for package in required_packages:
-    try:
-        __import__(package)
-    except ImportError:
-        print(f"{package} not installed. Installing...")
-        install(package)
-    else:
-        print(f"{package} is already installed.")
-
-
-import os
 import socket
 import threading
+from typing import Optional
+
+def install_and_import(package: str, import_name: Optional[str] = None) -> None:
+    """
+    Installs and imports a package.
+
+    Args:
+        package: The name of the package to install.
+        import_name: The name to use when importing the package. Defaults to the package name.
+    """
+    import_name = import_name or package
+    try:
+        __import__(import_name)
+    except ImportError:
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+            __import__(import_name)
+        except Exception as e:
+            print(f"Error installing package {package}: {e}")
+            raise
+
+
+def check_and_install_packages() -> None:
+    """
+    Checks and installs required packages.
+    """
+    packages = {
+        'googletrans': 'googletrans==4.0.0-rc1',
+        'cryptography': 'cryptography',
+        'torch': 'torch',
+        'numpy': 'numpy',
+        'transformers': 'transformers'
+    }
+
+    for module_name, package_name in packages.items():
+        install_and_import(package_name, module_name)
+
+check_and_install_packages()
+
 
 from cryptography.fernet import Fernet
 import torch
@@ -70,6 +78,7 @@ elif torch.backends.mps.is_available():
 else:
     device = torch.device('cpu')
     print("Using CPU")
+
 
 tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
 model = RobertaForSequenceClassification.from_pretrained('roberta-base', num_labels=6)
@@ -147,6 +156,7 @@ def is_toxic(message: str, threshold: float = 0.5) -> bool:
             logits = outputs.logits
             probabilities = torch.sigmoid(logits).cpu().numpy()
 
+    # Consider message toxic if any class probability is above the threshold
     return np.any(probabilities > threshold)
 
 
@@ -166,19 +176,38 @@ def handle_client(client_socket: socket.socket) -> None:
     Args:
         client_socket (socket.socket): Client socket to handle communications with.
     """
-    while True:
-        try:
-            message = client_socket.recv(1024).decode('utf-8')
-            if is_toxic(message):
-                response = "Your message was flagged as inappropriate and will not be sent."
-            else:
-                response = message
+    try:
+        name = client_socket.recv(1024).decode('utf-8')
+        if not name:
+            raise ValueError("Client did not send a name.")
 
-            client_socket.send(response.encode('utf-8'))
-        except Exception as e:
-            print(f"Error handling message: {e}")
-            client_socket.close()
-            break
+        print(f"{name} has connected.")
+
+        clients.append((client_socket, name))
+        broadcast(f"{name} has joined the chat!", client_socket)
+
+        while True:
+            encrypted_message = client_socket.recv(1024)
+            if encrypted_message:
+                message = cipher.decrypt(encrypted_message).decode('utf-8')
+
+                if is_toxic(message):
+                    client_socket.send(cipher.encrypt("Your message was flagged as inappropriate.".encode('utf-8')))
+                else:
+                    formatted_message = f"{name}: {message}"
+                    broadcast(formatted_message, client_socket)
+            else:
+                raise ConnectionError("Empty message received, client may have disconnected.")
+    except ValueError as e:
+        print(f"Error with client {name}: {e}")
+    except ConnectionError as e:
+        print(f"{name} has disconnected unexpectedly.")
+    except Exception as e:
+        print(f"Error handling client {name}: {e}")
+    finally:
+        client_socket.close()
+        clients.remove((client_socket, name))
+        broadcast(f"{name} has left the chat.", client_socket)
 
 
 ##############################################
@@ -192,12 +221,12 @@ def handle_client(client_socket: socket.socket) -> None:
 
 key = Fernet.generate_key()
 cipher = Fernet(key)
+
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(('0.0.0.0', 9999))
-server.listen(5)
+server.listen(60)
 
 clients = []
-
 
 def broadcast(message: str, sender_socket: socket.socket) -> None:
     """
@@ -213,18 +242,16 @@ def broadcast(message: str, sender_socket: socket.socket) -> None:
                 encrypted_message = cipher.encrypt(message.encode('utf-8'))
                 client_socket.send(encrypted_message)
             except Exception as e:
-                print(f"Error broadcasting message: {e}")
+                print(f"Error broadcasting message to {name}: {e}")
                 client_socket.close()
                 clients.remove((client_socket, name))
 
-
 print("Server has started")
 print(f"Encryption key: {key.decode()}")
-
 while True:
     try:
         client_socket, addr = server.accept()
-        print(f"Connection from {addr}")
+        print(f"Connection attempt from {addr}")
         client_handler = threading.Thread(target=handle_client, args=(client_socket,))
         client_handler.start()
     except Exception as e:
