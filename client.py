@@ -1,16 +1,19 @@
+########################################
+########################################
+##                                    ##
+##    Package Installation Section    ##
+##                                    ##
+########################################
+########################################
+
 import re
-import subprocess
 import sys
 import socket
 import threading
-
-from googletrans import Translator
-from cryptography.fernet import Fernet
-
+import subprocess
 import base64
-import binascii
-from typing import Optional, Dict
 
+from typing import Optional, Dict
 
 def install_and_import(package: str, import_name: Optional[str] = None) -> None:
     """
@@ -31,7 +34,6 @@ def install_and_import(package: str, import_name: Optional[str] = None) -> None:
             print(f"Error installing package {package}: {e}")
             raise
 
-
 def check_and_install_packages() -> None:
     """
     Checks and installs required packages.
@@ -46,11 +48,20 @@ def check_and_install_packages() -> None:
     for module_name, package_name in packages.items():
         install_and_import(package_name, module_name)
 
-
 check_and_install_packages()
 
-translator = Translator()
+from googletrans import Translator
+from cryptography.fernet import Fernet
 
+####################################
+####################################
+##                                ##
+##    Message Handling Section    ##
+##                                ##
+####################################
+####################################
+
+translator = Translator()
 
 def receive_messages(client_socket: socket.socket, cipher: Fernet, language: str) -> None:
     """
@@ -74,6 +85,13 @@ def receive_messages(client_socket: socket.socket, cipher: Fernet, language: str
             print(f"Error receiving message: {e}")
             break
 
+#####################################
+#####################################
+##                                 ##
+##    Utility Functions Section    ##
+##                                 ##
+#####################################
+#####################################
 
 def display_languages(languages: Dict[str, str]) -> None:
     """
@@ -99,7 +117,6 @@ def display_languages(languages: Dict[str, str]) -> None:
             print()
     print()
 
-
 def is_valid_ip(address: str) -> bool:
     """
     Validates if the given address is a valid IP address or an ngrok address.
@@ -114,8 +131,14 @@ def is_valid_ip(address: str) -> bool:
     ngrok_pattern = re.compile(r'^[0-9]+\.tcp\.ngrok\.io$')
     return bool(ip_pattern.match(address) or ngrok_pattern.match(address))
 
+##################################
+##################################
+##                              ##
+##    Main Execution Section    ##
+##                              ##
+##################################
+##################################
 
-# ASCII Art Welcome Message
 welcome_message = """
     ____    _____      ____ _           _   
    |_  _|  /  _  \    / ___| |__   __ _| |_ 
@@ -127,7 +150,6 @@ welcome_message = """
 print(welcome_message)
 print("Welcome to an encrypted, auto-translation chatroom\nthat filters negative messages")
 
-# Ask for the server address, port number, name, and language
 while True:
     server_address = input("\nEnter server address (IP or ngrok address): ")
     if server_address.strip() and is_valid_ip(server_address):
@@ -146,7 +168,7 @@ while True:
         break
     print("Please enter a valid name.")
 
-# Available languages dictionary
+# Available languages for translation from Google Translate
 languages = {
     'af': 'Afrikaans', 'sq': 'Albanian', 'am': 'Amharic', 'ar': 'Arabic', 'hy': 'Armenian', 'az': 'Azerbaijani',
     'eu': 'Basque', 'be': 'Belarusian', 'bn': 'Bengali', 'bs': 'Bosnian', 'bg': 'Bulgarian', 'ca': 'Catalan',
@@ -172,36 +194,17 @@ display_languages(languages)
 
 language = input("\nEnter your preferred language code (e.g., 'en' for English - default language if none chosen): ")
 
-# Set default language to English if no language is chosen
 if not language:
     language = 'en'
-
-max_attempts = 5
-attempts = 0
-
-while attempts < max_attempts:
-    key = input("\nEnter the encryption key provided by the server: ")
-    if key.strip():
-        try:
-            missing_padding = len(key) % 4
-            if missing_padding:
-                key += '=' * (4 - missing_padding)
-                key = base64.urlsafe_b64decode(key.encode())
-                cipher = Fernet(key)
-                break
-        except (binascii.Error, ValueError) as e:
-            attempts += 1
-            print(f"Invalid encryption key ({attempts}/{max_attempts} attempts): {e}")
-            if attempts == max_attempts:
-                print("Max attempts reached. Please check the encryption key provided by the server.")
-                sys.exit(1)
-        else:
-            print("Please enter a valid encryption key.")
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((server_address, int(port)))
 
 client.send(name.encode('utf-8'))
+
+# Receive the encryption key from the server
+key = client.recv(1024)
+cipher = Fernet(key)
 
 receive_thread = threading.Thread(target=receive_messages, args=(client, cipher, language))
 receive_thread.start()
