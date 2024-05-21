@@ -16,7 +16,7 @@ from typing import Optional
 
 def install_and_import(package: str, import_name: Optional[str] = None) -> None:
     """
-    Installs and imports a package.
+    Installs and imports packages.
 
     Args:
         package: The name of the package to install.

@@ -6,6 +6,7 @@
 ########################################
 ########################################
 
+
 import re
 import sys
 import socket
@@ -14,6 +15,7 @@ import subprocess
 import base64
 
 from typing import Optional, Dict
+
 
 def install_and_import(package: str, import_name: Optional[str] = None) -> None:
     """
@@ -34,6 +36,7 @@ def install_and_import(package: str, import_name: Optional[str] = None) -> None:
             print(f"Error installing package {package}: {e}")
             raise
 
+
 def check_and_install_packages() -> None:
     """
     Checks and installs required packages.
@@ -48,10 +51,12 @@ def check_and_install_packages() -> None:
     for module_name, package_name in packages.items():
         install_and_import(package_name, module_name)
 
+
 check_and_install_packages()
 
 from googletrans import Translator
 from cryptography.fernet import Fernet
+
 
 ####################################
 ####################################
@@ -61,7 +66,9 @@ from cryptography.fernet import Fernet
 ####################################
 ####################################
 
+
 translator = Translator()
+
 
 def receive_messages(client_socket: socket.socket, cipher: Fernet, language: str) -> None:
     """
@@ -85,6 +92,7 @@ def receive_messages(client_socket: socket.socket, cipher: Fernet, language: str
             print(f"Error receiving message: {e}")
             break
 
+
 #####################################
 #####################################
 ##                                 ##
@@ -92,6 +100,7 @@ def receive_messages(client_socket: socket.socket, cipher: Fernet, language: str
 ##                                 ##
 #####################################
 #####################################
+
 
 def display_languages(languages: Dict[str, str]) -> None:
     """
@@ -117,6 +126,7 @@ def display_languages(languages: Dict[str, str]) -> None:
             print()
     print()
 
+
 def is_valid_ip(address: str) -> bool:
     """
     Validates if the given address is a valid IP address or an ngrok address.
@@ -131,6 +141,7 @@ def is_valid_ip(address: str) -> bool:
     ngrok_pattern = re.compile(r'^[0-9]+\.tcp\.ngrok\.io$')
     return bool(ip_pattern.match(address) or ngrok_pattern.match(address))
 
+
 ##################################
 ##################################
 ##                              ##
@@ -138,6 +149,7 @@ def is_valid_ip(address: str) -> bool:
 ##                              ##
 ##################################
 ##################################
+
 
 welcome_message = """
     ____    _____      ____ _           _   
